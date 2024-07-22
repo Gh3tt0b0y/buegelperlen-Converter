@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bügelperlen Vorlage Generator</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .sidebar {
+            width: 500px;
+            padding: 20px;
+            border-right: 1px solid #ccc;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .content {
+            margin-left: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .main-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .thumbnails {
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .thumbnails img {
+            max-width: 100px;
+            max-height: 100px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .log-box {
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 20px;
+        }
+        .form-control {
+            font-size: 0.7rem; /* Verkleinert die Schriftgröße der Formularfelder */
+        }
+        .btn {
+            font-size: 0.875rem; /* Verkleinert die Schriftgröße der Buttons */
+            padding: 0.375rem 0.75rem; /* Verkleinert die Polsterung der Buttons */
+        }
+        .label
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar bg-light">
+            <h1 class="h4">Bügelperlen Designer</h1>
+
+            <form action="{{ url_for('upload_image') }}" method="post" enctype="multipart/form-data" class="mb-4">
+                <label>Vorlageneinstellungen</label>
+                <div class="form-group">
+                    <label for="file"><i class="bi bi-image"></i> Bild hochladen:</label>
+                    <input type="file" name="file" id="file" class="form-control" required text="Keine Datei">
+                    <label for="breite_cm"><i class="bi bi-arrows"></i> Breite (cm):</label>
+                    <input type="number" name="breite_cm" id="breite_cm" class="form-control" step="0.1" required>
+                    <label for="hoehe_cm"><i class="bi bi-arrows-vertical"></i> Höhe (cm):</label>
+                    <input type="number" name="hoehe_cm" id="hoehe_cm" class="form-control" step="0.1" required>
+                    <label for="perlen_groesse"><i class="bi bi-0-circle-fill"></i> Perlengröße:</label>
+                    <select name="perlen_groesse" id="perlen_groesse" class="form-control">
+                        <option value="mini">Mini</option>
+                        <option value="midi">Midi</option>
+                        <option value="maxi">Maxi</option>
+                    </select>
+                    <label for="seitentitel">Seitentitel:</label>
+                    <input type="text" name="seitentitel" id="seitentitel" class="form-control">
+                    <label for="mode"><i class="bi bi-palette"></i> Modus:</label>
+                    <select name="mode" id="mode" class="form-control">
+                        <option value="normal">Standard</option>
+                        <option value="Grayscale">Graustufe</option>
+                        
+                    </select>
+                    <label for="farbpalette"><i class="bi bi-palette"></i> Farbpalette:</label>
+                    <select name="farbpalette" id="farbpalette" class="form-control">
+                        <option value="Standard">Standard</option>
+                        <option value="Pastel">Pastelfarben</option>
+                        <option value="Mega">Alle Farben</option>
+                        
+                    </select>
+                </div>
+
+                <label>Einstellungen Bauplatte</label>
+                <div class="form-group">
+                    <label for="platte_x">Perlenanzahl in der Breite:</label>
+                    <input type="number" name="platte_x" id="platte_x" class="form-control" value="29">
+                    <label for="platte_y">Perlenanzahl in der Höhe:</label>
+                    <input type="number" name="platte_y" id="platte_y" class="form-control" value="29">
+                </div>
+
+                <label>Erweiterte Einstellungen</label>
+
+                <div class="form-group">
+                    <label for="abstand">Abstand (mm):</label>
+                    <input type="number" name="abstand" id="abstand" class="form-control" step="0.1" value="10">
+                    <input type="checkbox" name="originalfarben" id="originalfarben" class="form-check-input">
+                    <label for="originalfarben" class="form-check-label">Originalfarben verwenden</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Vorlage erstellen</button>
+            </form>
+
+            <div class="log-box x-small">
+                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            
+        </div>
+        
+        {% if preview_image %}
+        <!-- Content -->
+       
+
+        <div class="content" style="width: 100%;">
+            <div class="toolbar" style="width:100%">
+                <button onclick="zoomIn()" class="btn btn-sm btn-secondary">Zoom +</button>
+                <button onclick="zoomOut()" class="btn btn-sm btn-secondary">Zoom -</button>
+                <button onclick="downloadImage()" class="btn btn-sm btn-secondary">Download PNG</button>
+                <button onclick="downloadPDF()" class="btn btn-sm btn-secondary">Download SVG</button>
+                <button onclick="downloadPDF()" class="btn btn-sm btn-secondary">Download PDF</button>
+                <button onclick="printImage()" class="btn btn-sm btn-secondary">Drucken</button>
+            </div>
+            <hr>
+            <div class="card" style="width: 100%;">
+                <h5 class="card-title">{{ seitentitel }}</h5>
+                
+                <div class="card-body">
+                    <div class="main-image">
+                        <img id="mainImage" src="{{ url_for('preview_image', filename=preview_image) }}" alt="Vorschau" class="img-fluid" style="width: fit-content">
+                    </div>
+                </div>
+            </div>
+
+            
+            
+               
+    
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function downloadPDF() {
+             var pdfUrl = '{{ url_for('preview_image', filename=preview_image.replace(".png", ".pdf")) }}'; // Pfad zur PDF-Datei
+             var link = document.createElement('a');
+            link.href = pdfUrl;
+            link.download = 'image.pdf';
+            link.click();
+        }
+        function showImage(src) {
+            document.getElementById('mainImage').src = src;
+        }
+
+        function zoomIn() {
+            var img = document.getElementById('mainImage');
+            var currWidth = img.clientWidth;
+            img.style.width = (currWidth + 50) + 'px';
+        }
+
+        function zoomOut() {
+            var img = document.getElementById('mainImage');
+            var currWidth = img.clientWidth;
+            img.style.width = (currWidth - 50) + 'px';
+        }
+
+        function downloadImage() {
+            var img = document.getElementById('mainImage');
+            var link = document.createElement('a');
+            link.href = img.src;
+            link.download = 'image.png';
+            link.click();
+        }
+        function downloadSVG() {
+            var pdfUrl = '{{ url_for('preview_image', filename=preview_image.replace(".png", ".svg")) }}'; // Pfad zur PDF-Datei
+            var link = document.createElement('a');
+            link.href = pdfUrl;
+            link.download = 'image.png';
+            link.click();
+        }
+
+        function printImage() {
+            var img = document.getElementById('mainImage');
+            var win = window.open('');
+            win.document.write('<img src="' + img.src + '" onload="window.print();window.close()" />');
+            win.focus();
+        }
+    </script>
+    {% endif %}
+    <script>
+        $(document).ready(function() {
+            $('#upload-form').on('submit', function(event) {
+                
+                event.preventDefault(); // Verhindert das Standard-Formular-Submit
+
+                var formData = new FormData(this);
+                $('#status-bar').show(); // Zeigt die Statuszeile an
+                $('#status-message').text('Lade Bild hoch...');
+                
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    xhr: function() {
+                        var xhr = new XMLHttpRequest();
+                        xhr.upload.addEventListener('progress', function(event) {
+                            if (event.lengthComputable) {
+                                var percentComplete = Math.round((event.loaded / event.total) * 100);
+                                $('#progress-bar').css('width', percentComplete + '%');
+                                $('#progress-bar').attr('aria-valuenow', percentComplete);
+                            }
+                        }, false);
+                        return xhr;
+                    },
+                    success: function(data) {
+                        $('#status-message').text('Bild erfolgreich hochgeladen.');
+                        $('#progress-bar').removeClass('progress-bar-animated').addClass('bg-success');
+                        $('#progress-bar').css('width', '100%');
+                    },
+                    error: function() {
+                        $('#status-message').text('Fehler beim Hochladen des Bildes.');
+                        $('#progress-bar').removeClass('progress-bar-animated').addClass('bg-danger');
+                    }
+                });
+            });
+        });
+        zoomOut()
+                zoomOut()
+                zoomOut()
+    </script>
+</body>
+</html>

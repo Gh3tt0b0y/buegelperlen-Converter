@@ -1,0 +1,9 @@
+Flask
+Pillow
+numpy
+matplotlib
+fpdf
+svglib
+reportlab
+colorama
+Werkzeug
