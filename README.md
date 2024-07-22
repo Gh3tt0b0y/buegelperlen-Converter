@@ -27,8 +27,8 @@ Der **Bügelperlen Designer** ist eine Webanwendung, die es ermöglicht, Bilder 
 
 3. **Anwendung Starten**
   ```sh
-  python web.py
-  oder die start.bat # Windows
+  Führe dazu die Start.bat aus danach wird die Virtuelle Umgebung eingerichtet, Die Pakete installiert, Und das Script gestartet. Der Webbrowser öffnet sich automatisch
+
 
 
 
