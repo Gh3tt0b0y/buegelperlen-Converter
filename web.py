@@ -292,8 +292,17 @@ def upload_image():
                 total_pixels = pixel_array.shape[0] * pixel_array.shape[1]
                 # Fortschritt in Prozent berechnen
 
-                progress = (current_pixel_index / total_pixels) * 100
-                log_to_ui("Perle an Position: {} | {} | {}x{} | Fortschritt: {:.2f}%".format(i, j, pixel_array.shape[0], pixel_array.shape[1], progress),"Progress")
+                progress_percent = (current_pixel_index / total_pixels) * 100
+                log_to_ui(
+                    "Perle an Position: {} | {} | {}x{} | Fortschritt: {:.2f}%".format(
+                        i,
+                        j,
+                        pixel_array.shape[0],
+                        pixel_array.shape[1],
+                        progress_percent,
+                    ),
+                    "Progress",
+                )
                 color = pixel_array[i, j] / 255.0
                 alpha = color[3]  # Alpha-Wert des Pixels
                 if alpha > 0:  # Nur Pixel mit Alpha-Wert > 0 zeichnen
